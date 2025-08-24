@@ -46,7 +46,9 @@ function App() {
       <p>Click on any card to flip it!</p>
       <div className="card-grid">
         {cards.map((card, index) => (
-          <Flashcard key={index} front={card.Front} back={card.Back} />
+          <Flashcard key={index} front={card.Front} back={card.Back} 
+           sentence={card.Sentence} // Pass the sentence data as a prop
+          />
         ))}
       </div>
     </div>

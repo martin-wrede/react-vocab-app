@@ -41,6 +41,24 @@
   padding: 20px;
   font-size: 1.5rem;
 }
+.flashcard-front {
+
+  /* This is the key! It tells Flexbox to stack items top-to-bottom. */
+  flex-direction: column; 
+  
+  /* This will center the items vertically in the column. */
+  justify-content: center; 
+  
+  /* This is the modern way to add space between the items. 
+     It's much better than <br> tags. Adjust the value as you like. */
+  gap: 15px; 
+  
+  /* These properties are from before, make sure they are still here */
+  background-color: #ffffff;
+  color: black;
+  border: 1px solid #ddd;
+
+}
 
 /* Style the front side */
 .flashcard-front {
