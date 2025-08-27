@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-   base:'/react-landing-page-template/',
+   base:'/react-vocab-app/',
   plugins: [react()],
 })
