@@ -31,12 +31,44 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
+  
 }
 
-.card {
-  padding: 2em;
+
+  /* src/App.css */
+
+/* --- NEW STYLES for the mode selector --- */
+
+.mode-selector {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 25px; /* Adds space between the links */
 }
 
-.read-the-docs {
-  color: #888;
+.mode-selector button {
+  /* Remove default button styles */
+  background: none;
+  border: none;
+  padding: 0;
+  
+  /* Style it like a link */
+  font-size: 1rem;
+  font-family: inherit; /* Use the same font as the rest of the page */
+  color: #2980b9; /* A nice blue color */
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.mode-selector button:hover {
+  text-decoration: underline;
+}
+
+/* Style for the currently active link */
+.mode-selector button.active {
+  font-weight: bold;
+  color: #333; /* Make it darker to show it's selected */
+  text-decoration: none;
+  cursor: default; /* No need for a pointer on the active item */
 }

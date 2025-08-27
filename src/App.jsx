@@ -8,6 +8,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+    const [learningMode, setLearningMode] = useState('en-de');
 
   // --- IMPORTANT ---
   // Replace this URL with the one you got from "Publish to the web"
@@ -64,6 +65,14 @@ function App() {
 
   }, []);
 
+  
+  if (loading) {
+    return <div className="loading-message">Loading Vocabulary...</div>;
+  }
+  
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
    
   if (loading) {
     return <div className="loading-message">Loading Vocabulary...</div>;
@@ -77,10 +86,29 @@ function App() {
     <div className="App">
       <h1>My Vocabulary Flashcards</h1>
       <p>Click on any card to flip it!</p>
-      <div className="card-grid">
+        <div className="mode-selector">
+        <button
+          className={learningMode === 'en-de' ? 'active' : ''}
+          onClick={() => setLearningMode('en-de')}
+        >
+          English → German
+        </button>
+        <button
+          className={learningMode === 'de-en' ? 'active' : ''}
+          onClick={() => setLearningMode('de-en')}
+        >
+          German → English
+        </button>
+      </div>
+     <div className="card-grid">
+        {/* --- MODIFIED: Conditionally pass props to Flashcard --- */}
         {cards.map((card, index) => (
-          <Flashcard key={index} front={card.Front} back={card.Back} 
-           sentence={card.Sentence} // Pass the sentence data as a prop
+          <Flashcard 
+            key={index} 
+            front={learningMode === 'en-de' ? card.Front : card.Back} 
+            back={learningMode === 'en-de' ? card.Back : card.Front}
+            // Only show the sentence when English is on the front
+            sentence={learningMode === 'en-de' ? card.Sentence : null}
           />
         ))}
       </div>
