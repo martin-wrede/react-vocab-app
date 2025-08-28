@@ -10,6 +10,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [learningMode, setLearningMode] = useState('en-de');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'carousel'
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
 
   // --- NEW: State to manage the currently selected sheet filter ---
   // We'll use the index of the sheet (0, 1, 2...) or 'all'
@@ -72,12 +75,27 @@ function App() {
   }, []);
 
     // --- NEW: Derive the cards to display based on the active filter ---
-  const displayedCards = allCards.filter(card => {
-    if (activeSheet === 'all') {
-      return true; // Show all cards
-    }
-    return card.sheetIndex === activeSheet; // Show only cards from the selected sheet
+ const displayedCards = allCards.filter(card => {
+    if (activeSheet === 'all') return true;
+    return card.sheetIndex === activeSheet;
   });
+
+   const showNextCard = () => {
+    // The % (modulo) operator is a clever trick for looping back to 0
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % displayedCards.length);
+  };
+
+   const showPrevCard = () => {
+    // This logic handles looping from 0 back to the end of the array
+    setCurrentCardIndex((prevIndex) => (prevIndex - 1 + displayedCards.length) % displayedCards.length);
+  };
+
+    useEffect(() => {
+    // Whenever the list of displayed cards changes (e.g., user clicks "Tab 2"),
+    // reset the carousel to the first card.
+    setCurrentCardIndex(0);
+  }, [displayedCards]); // The dependency array makes this run ONLY when displayedCards changes.
+
 
   
   if (loading) {
@@ -100,6 +118,24 @@ function App() {
     <div className="App">
       <h1>My Vocabulary Flashcards</h1>
       <p>Click on any card to flip it!</p>
+        {/* --- NEW: View Mode Switcher --- */}
+      <div className="view-mode-selector">
+        <button className={viewMode === 'grid' ? 'active' : ''} onClick={() => setViewMode('grid')}>
+          Overview
+        </button>
+        <button className={viewMode === 'carousel' ? 'active' : ''} onClick={() => setViewMode('carousel')}>
+          Single Card
+        </button>
+      </div>
+
+       {/* --- NEW: Conditional rendering for the Carousel Controls --- */}
+      {viewMode === 'carousel' && displayedCards.length > 0 && (
+        <div className="carousel-controls">
+          <button onClick={showPrevCard}>&lt;</button>
+          <span>{currentCardIndex + 1} / {displayedCards.length}</span>
+          <button onClick={showNextCard}>&gt;</button>
+        </div>
+      )}
        <div className="sheet-selector">
         <button
           className={activeSheet === 'all' ? 'active' : ''}
@@ -132,20 +168,32 @@ function App() {
           German → English
         </button>
       </div>
-   <div className="card-grid">
-        {/* --- MODIFIED: Map over 'displayedCards' instead of 'cards' --- */}
-        {displayedCards.map((card, index) => (
-          <Flashcard 
-            key={index} 
-            front={learningMode === 'en-de' ? card.Front : card.Back} 
+    {/* --- MODIFIED: Conditionally render Grid or Carousel View --- */}
+      {viewMode === 'grid' ? (
+        <div className="card-grid">
+          {displayedCards.map((card, index) => (
+            <Flashcard key={index}  front={learningMode === 'en-de' ? card.Front : card.Back} 
             back={learningMode === 'en-de' ? card.Back : card.Front}
             sentence={learningMode === 'en-de' ? card.Sentence : null}
           />
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="carousel-view">
+          {displayedCards.length > 0 && (
+            <Flashcard
+              // We use a unique key to force React to re-render the card
+              // when the index changes, which resets its flipped state.
+              key={currentCardIndex}
+              front={learningMode === 'en-de' ? displayedCards[currentCardIndex].Front : displayedCards[currentCardIndex].Back}
+              back={learningMode === 'en-de' ? displayedCards[currentCardIndex].Back : displayedCards[currentCardIndex].Front}
+              sentence={learningMode === 'en-de' ? displayedCards[currentCardIndex].Sentence : null}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
-
 
 export default App;
