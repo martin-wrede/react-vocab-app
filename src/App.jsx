@@ -1,21 +1,25 @@
-// src/App.js
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import Flashcard from './components/Flashcard.jsx';
 import './App.css';
 
 function App() {
-  const [cards, setCards] = useState([]);
+  // --- MODIFIED: Rename 'cards' to 'allCards' to store the complete dataset ---
+  const [allCards, setAllCards] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-    const [learningMode, setLearningMode] = useState('en-de');
+  const [learningMode, setLearningMode] = useState('en-de');
 
+  // --- NEW: State to manage the currently selected sheet filter ---
+  // We'll use the index of the sheet (0, 1, 2...) or 'all'
+  const [activeSheet, setActiveSheet] = useState('all');
   // --- IMPORTANT ---
   // Replace this URL with the one you got from "Publish to the web"
   /// const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?output=csv';
 
    const GOOGLE_SHEET_URLS = [
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pubhtml?gid=0&single=true",
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=0&single=true&output=csv",
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=342867880&single=true&output=csv",
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=567469483&single=true&output=csv",
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=1791893837&single=true&output=csv",
@@ -46,14 +50,16 @@ function App() {
  // Use Promise.all to fetch all sheets at the same time
     Promise.all(GOOGLE_SHEET_URLS.map(url => fetchSheet(url)))
       .then(allSheetsData => {
-        // allSheetsData is now an array of arrays, e.g., [[...sheet1_cards], [...sheet2_cards]]
-        console.log("Data from all sheets:", allSheetsData);
-        
-        // Flatten the array of arrays into a single array of cards
-        const combinedCards = allSheetsData.flat();
-        
-        console.log("Combined cards:", combinedCards);
-        setCards(combinedCards);
+        // --- MODIFIED: Tag each card with its source sheet index ---
+        const cardsWithSource = allSheetsData.flatMap((sheetData, index) => 
+          sheetData.map(card => ({
+            ...card,        // Keep the original card data (Front, Back, etc.)
+            sheetIndex: index // Add the source index (0, 1, 2...)
+          }))
+        );
+
+        console.log("All cards with source index:", cardsWithSource);
+        setAllCards(cardsWithSource); // Store the complete, tagged dataset
       })
       .catch(err => {
         console.error("Error fetching one or more sheets:", err);
@@ -64,6 +70,14 @@ function App() {
       });
 
   }, []);
+
+    // --- NEW: Derive the cards to display based on the active filter ---
+  const displayedCards = allCards.filter(card => {
+    if (activeSheet === 'all') {
+      return true; // Show all cards
+    }
+    return card.sheetIndex === activeSheet; // Show only cards from the selected sheet
+  });
 
   
   if (loading) {
@@ -86,6 +100,24 @@ function App() {
     <div className="App">
       <h1>My Vocabulary Flashcards</h1>
       <p>Click on any card to flip it!</p>
+       <div className="sheet-selector">
+        <button
+          className={activeSheet === 'all' ? 'active' : ''}
+          onClick={() => setActiveSheet('all')}
+        >
+          Show All
+        </button>
+        {/* Create a button for each sheet URL */}
+        {GOOGLE_SHEET_URLS.map((url, index) => (
+          <button
+            key={index}
+            className={activeSheet === index ? 'active' : ''}
+            onClick={() => setActiveSheet(index)}
+          >
+            Tab {index + 1}
+          </button>
+        ))}
+      </div>
         <div className="mode-selector">
         <button
           className={learningMode === 'en-de' ? 'active' : ''}
@@ -100,14 +132,13 @@ function App() {
           German → English
         </button>
       </div>
-     <div className="card-grid">
-        {/* --- MODIFIED: Conditionally pass props to Flashcard --- */}
-        {cards.map((card, index) => (
+   <div className="card-grid">
+        {/* --- MODIFIED: Map over 'displayedCards' instead of 'cards' --- */}
+        {displayedCards.map((card, index) => (
           <Flashcard 
             key={index} 
             front={learningMode === 'en-de' ? card.Front : card.Back} 
             back={learningMode === 'en-de' ? card.Back : card.Front}
-            // Only show the sentence when English is on the front
             sentence={learningMode === 'en-de' ? card.Sentence : null}
           />
         ))}
@@ -115,5 +146,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
