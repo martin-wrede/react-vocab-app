@@ -13,8 +13,7 @@ function App() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [activeSheet, setActiveSheet] = useState('all');
 
-  const GOOGLE_SHEET_URLS = [
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQPFqzudyMFwPAmNA7-SEACmWzDB0ATMYCFghvbj0jCNeq93vMaIYG1QVXw-0BCj62tRTSwNqq-KXQT/pub?output=csv",
+  const GOOGLE_SHEET_URLS = [ 
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=0&single=true&output=csv",
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=342867880&single=true&output=csv",
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=567469483&single=true&output=csv",
