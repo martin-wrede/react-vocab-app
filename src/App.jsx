@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
 import Flashcard from './components/Flashcard.jsx';
 import './App.css';
@@ -51,10 +51,12 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  const displayedCards = allCards.filter(card => {
-    if (activeSheet === 'all') return true;
-    return card.sheetIndex === activeSheet;
-  });
+  const displayedCards = useMemo(() => {
+    return allCards.filter(card => {
+      if (activeSheet === 'all') return true;
+      return card.sheetIndex === activeSheet;
+    });
+  }, [allCards, activeSheet]);
 
   const showNextCard = () => {
     setCurrentCardIndex(prevIndex => (prevIndex + 1) % displayedCards.length);
