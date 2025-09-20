@@ -138,9 +138,38 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   /* Make the card a bit bigger in this view */
   max-width: 500px;
   width: 100%;
   margin: 0 auto;
+}
+
+/* --- NEW STYLES for Mix New Button --- */
+.mix-new-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.mix-new-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.mix-new-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.mix-new-button:active {
+  transform: translateY(0);
 }

@@ -12,6 +12,9 @@ function App() {
   const [viewMode, setViewMode] = useState('grid');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [activeSheet, setActiveSheet] = useState('all');
+  const [cardResetKey, setCardResetKey] = useState(0);
+  const [isShuffled, setIsShuffled] = useState(false);
+  const [shuffleKey, setShuffleKey] = useState(0);
 
   const GOOGLE_SHEET_URLS = [ 
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-2mqr3uDfC-YjQSWmoYwMILDtPZsyodBgvSk2xP8z9z7Uo1KxCySM_RUSbM8uDcTgAusNRSmNUvaO/pub?gid=0&single=true&output=csv",
@@ -51,12 +54,22 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const displayedCards = useMemo(() => {
-    return allCards.filter(card => {
+    const filteredCards = allCards.filter(card => {
       if (activeSheet === 'all') return true;
       return card.sheetIndex === activeSheet;
     });
-  }, [allCards, activeSheet]);
+    return isShuffled ? shuffleArray(filteredCards) : filteredCards;
+  }, [allCards, activeSheet, isShuffled, shuffleKey]);
 
   const showNextCard = () => {
     setCurrentCardIndex(prevIndex => (prevIndex + 1) % displayedCards.length);
@@ -64,6 +77,13 @@ function App() {
 
   const showPrevCard = () => {
     setCurrentCardIndex(prevIndex => (prevIndex - 1 + displayedCards.length) % displayedCards.length);
+  };
+
+  const mixNew = () => {
+    setCardResetKey(prev => prev + 1);
+    setIsShuffled(true);
+    setShuffleKey(prev => prev + 1);
+    setCurrentCardIndex(0);
   };
 
   useEffect(() => {
@@ -95,11 +115,15 @@ function App() {
         <button className={learningMode === 'de-en' ? 'active' : ''} onClick={() => setLearningMode('de-en')}>German → English</button>
       </div>
 
+      <div className="mix-new-container">
+        <button className="mix-new-button" onClick={mixNew}>Mix new</button>
+      </div>
+
       {viewMode === 'grid' ? (
         <div className="card-grid">
           {displayedCards.map((card, index) => (
-            <Flashcard 
-              key={index}
+            <Flashcard
+              key={`${cardResetKey}-${index}`}
               front={learningMode === 'en-de' ? card.Front : card.Back}
               back={learningMode === 'en-de' ? card.Back : card.Front}
               sentence={card.Sentence}
@@ -113,7 +137,7 @@ function App() {
           <div className="carousel-view">
             {displayedCards.length > 0 && (
               <Flashcard
-                key={currentCardIndex}
+                key={`${cardResetKey}-${currentCardIndex}`}
                 front={learningMode === 'en-de' ? displayedCards[currentCardIndex].Front : displayedCards[currentCardIndex].Back}
                 back={learningMode === 'en-de' ? displayedCards[currentCardIndex].Back : displayedCards[currentCardIndex].Front}
                 // --- FIX: Correctly access the sentence from the displayedCards array ---
