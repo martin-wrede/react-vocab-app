@@ -2,17 +2,23 @@
 import React, { useState } from 'react';
 import './Flashcard.css';
  
-// --- ADD 'learningMode' TO THE PROPS ---
-function Flashcard({ front, back, sentence, learningMode }) {
+function Flashcard({ front, back, sentence, learningMode, cardId, isLearned, onToggleLearned }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleClick = () => {
     setIsFlipped(!isFlipped);
   };
 
+  const handleLearnedToggle = (e) => {
+    e.stopPropagation(); // Prevent card flip when clicking learned button
+    if (onToggleLearned && cardId) {
+      onToggleLearned(cardId);
+    }
+  };
+
     return (
     <div
-      className={`flashcard ${isFlipped ? 'is-flipped' : ''}`}
+      className={`flashcard ${isFlipped ? 'is-flipped' : ''} ${isLearned ? 'learned' : ''}`}
       onClick={handleClick}
     >
       <div className="flashcard-inner">
@@ -24,7 +30,7 @@ function Flashcard({ front, back, sentence, learningMode }) {
             <p className="example-sentence">{sentence}</p>
           )}
         </div>
-        
+
         {/* --- BACK OF THE CARD --- */}
         <div className="flashcard-back">
           <p className="vocab-word">{back}</p>
@@ -34,6 +40,17 @@ function Flashcard({ front, back, sentence, learningMode }) {
           )}
         </div>
       </div>
+
+      {/* Learned toggle button */}
+      {cardId && (
+        <button
+          className={`learned-toggle ${isLearned ? 'learned' : 'unlearned'}`}
+          onClick={handleLearnedToggle}
+          title={isLearned ? 'Als ungelernt markieren' : 'Als gelernt markieren'}
+        >
+          {isLearned ? '✓' : '○'}
+        </button>
+      )}
     </div>
   );
 }

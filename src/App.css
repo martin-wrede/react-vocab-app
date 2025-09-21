@@ -173,3 +173,62 @@
 .mix-new-button:active {
   transform: translateY(0);
 }
+
+/* --- NEW STYLES for Learning Filter Selector --- */
+.learning-filter-selector {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background-color: #f5f5f5;
+  padding: 5px;
+  border-radius: 8px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.learning-filter-selector button {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 0.9rem;
+}
+
+.learning-filter-selector button.active {
+  background-color: #4CAF50;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.learning-filter-selector button:hover:not(.active) {
+  background-color: #e0e0e0;
+}
+
+/* --- Bookmark Progress Button --- */
+.bookmark-progress-button {
+  background: linear-gradient(135deg, #fd7e14 0%, #f8ac59 100%);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
+  margin-left: 15px;
+}
+
+.bookmark-progress-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(253, 126, 20, 0.4);
+}
+
+.bookmark-progress-button:active {
+  transform: translateY(0);
+}
